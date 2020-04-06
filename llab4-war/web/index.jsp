@@ -60,12 +60,12 @@
                                 <style type="text/css">
                                 .bt{width:100%}
                             </style>
-                            <input  class="bt" name="button1" width="100" type="submit" value="Войти"/>
+                            <input  class="bt" type="submit" value="Войти"/>
                         </td>
                     </tr>
-                    <tr>                                           
-
-                        </section>
-                        </center>
-                        </body>
-                        </html>
+                </table>   
+            </form>
+        </section>
+    </center>
+</body>
+</html>

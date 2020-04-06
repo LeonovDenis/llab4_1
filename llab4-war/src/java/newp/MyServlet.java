@@ -7,11 +7,14 @@ package newp;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -37,7 +40,7 @@ public class MyServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet MyServlet</title>");            
+            out.println("<title>Servlet MyServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet MyServlet at " + request.getContextPath() + "</h1>");
@@ -58,7 +61,28 @@ public class MyServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        String login = request.getParameter("login").trim();
+        try (PrintWriter out = response.getWriter()) {
+            if (login == null || login.isEmpty() || login.length() > 10) {
+                out.println("OUUU");
+                return;
+            }
+
+            HttpSession hs = request.getSession(false);
+            if (hs != null) {
+                hs.invalidate();
+            }
+            hs = request.getSession(true);
+
+            hs.setAttribute("user", login.trim());
+
+              RequestDispatcher requestD = request.getRequestDispatcher("/message.jsp");
+             requestD.forward(request, response);
+           // response.sendRedirect("message.jsp");
+        }
     }
 
     /**
@@ -72,7 +96,63 @@ public class MyServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
+        // Получение коллекции всех параметров запроса
+        Map<String, String[]> map = request.getParameterMap();
+        StringBuilder sb = new StringBuilder();
+        try (PrintWriter out = response.getWriter()) {
+            // Получение ссылки на сессию.
+            HttpSession hs = request.getSession(false);
+            if (hs == null) {
+                // Если сессия пользователя уже закрыта,...
+                // то пользователю возвращается форма ввода логина
+                response.sendRedirect("message.jsp");
+                return;
+            }
+            String user = hs.getAttribute("user").toString();
+            String message = null;
+            // Перебор полученной коллекции параметров запроса
+            for (Map.Entry<String, String[]> m : map.entrySet()) {
+                String key = m.getKey();
+                
+                    switch (key) {
+                    case "message": // Обработка собственно сообщения.
+                        // Проверка корректности сообщения
+                        if (m.getValue() != null && m.getValue().length > 0) {
+                            message = m.getValue()[0].trim();
+                        }
+                        break;
+                        
+                     case "save_text": // Обработка собственно сообщения.
+                        // Проверка корректности сообщения
+                        if (m.getValue() != null && m.getValue().length > 0) {
+                            message = m.getValue()[0].trim();
+                        }
+                        break;    
+                        
+                        
+                    case "save_numb": // Команда на отправку сообщения.
+                        
+                        
+                        return;
+                    case "summ": // Команда перехода на форму отправки сообщения
+                        
+                        return;
+                    case "list": // Команда на вывод списка сообщения пользователя.
+                       
+                        return;
+                    case "return": // Команда на выход из приложения.
+                        hs.invalidate();
+                        response.sendRedirect("index.jsp");
+                        return;
+                    default: // Обработка неизвестной команды.
+                        ;
+                           }
+                  }
+            out.println(user);
+        }
     }
 
     /**
