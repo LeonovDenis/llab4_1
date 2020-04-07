@@ -67,7 +67,7 @@
                         <form name="numbF" action="toServ" method="POST"> 
                             <table  >
                                 <tr>    
-                                    <td >
+                                    <td > 
                                         <input type="text" name="message" value="" size="20" required placeholder="Целочисленная форма"/>
                                     </td>
                                 </tr>     
@@ -111,7 +111,7 @@
     <style>
         ol {
             color: infotext;
-             }
+        }
     </style>
     <ol color="white">
         <% for (int i = 0; i < 10; i++) {
